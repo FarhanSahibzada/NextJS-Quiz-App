@@ -1,21 +1,19 @@
 "use client";
 import React, { useEffect, useState } from "react";
-
+import axios from "axios";
 
 export default function Quiz() {
   const [index, setIndex] = useState(0);
   const [cate, setcate] = useState()
   const [list, setlist] = useState();
-const [checked , setchecked] = useState(false);
+  const [checked, setchecked] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('https://eaxeli.com/api/v1/questions/quiz?categorySlug=history');
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status} - ${res.statusText}`);
-        }
-        const data = await res.json();
+        const res = await axios.get('https://eaxeli.com/api/v1/questions/quiz?categorySlug=history');
+        const data = await res.data;
         if (data) {
           setcate(data)
         }
@@ -34,7 +32,7 @@ const [checked , setchecked] = useState(false);
   }, [cate, index]);
 
   const handleclick = (ans) => {
-      setchecked(true)
+    setchecked(true)
   }
 
   return (
@@ -52,7 +50,7 @@ const [checked , setchecked] = useState(false);
           </p>
           {list?.options.map((val, index) => (
             <div key={index} className="space-y-4 ">
-              <button className={`mb-2 w-full py-3 ${checked ? (list.answer == val ? `bg-green-500` : `bg-red-500`):`bg-indigo-600`}   text-white rounded-xl font-semibold shadow-md  transition duration-300`}
+              <button className={`mb-2 w-full py-3 ${checked ? (list.answer == val ? `bg-green-500` : `bg-red-500`) : `bg-indigo-600`}   text-white rounded-xl font-semibold shadow-md  transition duration-300`}
                 onClick={() => handleclick(val)}
               >
                 {val}
@@ -63,14 +61,16 @@ const [checked , setchecked] = useState(false);
 
         <div className="flex justify-between mt-6">
           <button className="py-2 px-6 bg-gray-200 rounded-lg text-gray-700 font-semibold hover:bg-gray-300 transition duration-300"
-            onClick={() => setIndex((prev) => prev - 1)
+            onClick={() => setIndex((prev) => Math.max(prev - 1, 0))
             }
-            >
+          >
             Back
           </button>
           <button className="py-2 px-6 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition duration-300"
-            onClick={() => {setIndex((prev) => prev + 1)
-            setchecked(false) }}
+            onClick={() => {
+              setIndex((prev) => prev + 1)
+              setchecked(false)
+            }}
           >
             Next
           </button>
